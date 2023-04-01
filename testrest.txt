@@ -1,0 +1,31 @@
+# -*- restclient -*-
+
+#
+#
+#
+GET http://localhost:3010/tickets
+
+#
+#
+#
+POST http://localhost:3010/tickets
+Content-Type: application/json
+{
+    "subject": "hello2",
+    "description": "there2",
+    "createdByEmail": "sandeep2@test.com"
+}
+
+#
+#
+#
+PUT http://localhost:3010/tickets/1/1
+
+#
+#
+#
+PUT http://localhost:3010/tickets/2/1/resolve
+Content-Type: application/json
+{
+    "resolution": "done"
+}
