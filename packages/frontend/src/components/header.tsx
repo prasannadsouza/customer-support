@@ -1,26 +1,35 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { LoginContext } from "../model/user";
 
 export const Header = () => {
-    const logout = () => {};
+  const user = useContext(LoginContext);
 
-    return (
-        <nav className="flex items-center justify-between flex-wrap p-6">
-            <div className="w-full flex-grow flex items-center">
-                <div className="text-sm flex-grow flex gap-4">
-                    <Link to="/" className="block m-4 text-white-200">
-                        Home
-                    </Link>
-                    <Link to="/support" className="block m-4 text-white-200">
-                        All Tickets
-                    </Link>
-                    <Link to="/team" className="block m-4 text-white-200">
-                        Team
-                    </Link>
-                    <a onClick={logout} className="cursor-pointer block m-4 text-white-200">
-                        Logout
-                    </a>
-                </div>
-            </div>
-        </nav>
-    );
+  const logout = () => {
+    user.setCurrentToken(null);
+  };
+
+  return (
+    <nav className="bg-gray-900 px-6 py-3">
+      <div className="flex items-center justify-between">
+        <div className="flex space-x-4">
+          <Link to="/" className="text-gray-300 hover:text-white">
+            Home
+          </Link>
+          <Link to="/support" className="text-gray-300 hover:text-white">
+            Tickets
+          </Link>
+          <Link to="/teams" className="text-gray-300 hover:text-white">
+            Team
+          </Link>
+        </div>
+        <button
+          onClick={logout}
+          className="text-gray-300 font-semibold hover:text-white px-3 py-2 rounded-md border border-gray-300"
+        >
+          Logout
+        </button>
+      </div>
+    </nav>
+  );
 }
