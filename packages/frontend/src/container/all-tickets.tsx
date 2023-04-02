@@ -18,8 +18,9 @@ export const TicketList = () => {
         return <div>Loading...</div>;
     }
 
-    if (error) {
-        return <div>{error}</div>
+  if (error) {
+    console.log(error);
+        return <div>Failed to get tickets</div>
     }
 
     if (!data) {

@@ -1,46 +1,46 @@
 import { User } from 'src/users/user.entity';
 import {
-  Entity,
   Column,
-  ManyToOne,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  JoinColumn,
   CreateDateColumn,
+  Entity,
   Index,
-} from 'typeorm'
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Ticket {
   @PrimaryGeneratedColumn()
-  id: number
+  id: number;
 
   @Column()
-  subject: string
+  subject: string;
 
   @Column()
-  description: string
+  description: string;
 
-  @ManyToOne(type => User, user => user.id)
+  @ManyToOne((type) => User, (user) => user.id)
   @JoinColumn()
-  assignedTo?: User
+  assignedTo?: User;
 
   @Column({ nullable: true })
-  assignedToId: number
+  assignedToId: number;
 
   @CreateDateColumn()
-  createdAt: Date
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updatedAt: Date;
 
   @Index()
   @Column()
-  resolved: boolean
+  resolved: boolean;
 
   @Column()
-  resolution: string
+  resolution: string;
 
   @Column()
-  createdByEmail: string
+  createdByEmail: string;
 }
