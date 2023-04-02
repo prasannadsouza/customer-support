@@ -19,9 +19,9 @@ export const Header = () => {
           <Link to="/support" className="text-gray-300 hover:text-white">
             Tickets
           </Link>
-          <Link to="/teams" className="text-gray-300 hover:text-white">
+          {user.token?.role == "admin" ? <Link to="/teams" className="text-gray-300 hover:text-white">
             Team
-          </Link>
+          </Link> : null}
         </div>
         <button
           onClick={logout}

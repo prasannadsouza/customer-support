@@ -3,25 +3,21 @@ import ReactDOM from 'react-dom/client'
 import { BareFetcher, SWRConfig } from 'swr'
 import App from './App'
 import './index.css'
-import { LoginContext, LoginProvider } from './model/user'
+import { LoginProvider, useWrappedFetch } from './model/user'
 
 const WrapFetcher = () => {
-  const { token } = useContext(LoginContext);
+  const wrappedFetcher = useWrappedFetch();
 
   const swrConfig = useMemo(() => {
     const fetcher: BareFetcher<any> = async (resource, init) => {
-      const headers = init?.headers ? init.headers : {};
-      const resp = fetch(resource, {
-        ...init,
-        headers: {
-          ...headers,
-          Authorization: `Bearer ${token}`
-        }
-      });
-      return (await resp).json()
+      const resp = await wrappedFetcher(resource, init);
+      if (!resp.ok) {
+        throw new Error(resp.statusText);
+      }
+      return resp.json()
     };
     return { fetcher };
-  }, [token]);
+  }, [wrappedFetcher]);
 
 
   return (

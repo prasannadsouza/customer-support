@@ -6,4 +6,8 @@ export type CreateTicket = {
 
 export type CreateTicketSucces = {
   id: number
-}
+};
+
+export type ResolveTicket = {
+  resolution: string
+};

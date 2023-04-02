@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Token } from "shared";
 
 export type AuthState = {
@@ -40,4 +40,33 @@ export const LoginProvider = ({ children }: { children: React.ReactNode }) => {
       {ready ? children : null}
     </LoginContext.Provider>
   );
+};
+
+
+export const useWrappedFetch = () => {
+  const { token, setCurrentToken } = useContext(LoginContext);
+
+  const wrapped = useMemo(() => {
+    return async (resource: any, init: any) => {
+      const headers = init?.headers ? init.headers : {};
+      const authHeader = token ? {
+        Authorization: `Bearer ${token.access_token}`
+      } : {};
+      const resp = await fetch(resource, {
+        ...init,
+        headers: {
+          ...headers,
+          ...authHeader
+        }
+      });
+
+      if (!resp.ok && resp.status == 401) {
+        setCurrentToken(null);
+      }
+
+      return resp;
+    };
+  }, [token]);
+
+  return wrapped;
 };

@@ -2,7 +2,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { AllTickets, AuthContainer, HomeLayout, HomePage, LoginPage, TeamPage } from "../container";
+import { AllTickets, AuthContainer, HomeLayout, HomePage, LoginPage, SingleTicket, TeamPage } from "../container";
 
 const router = createBrowserRouter([
   {
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
       },
       {
         path: ":id",
-        element: <div>single ticket</div>,
+        element: <div><SingleTicket /></div>,
       },
     ]
   },
