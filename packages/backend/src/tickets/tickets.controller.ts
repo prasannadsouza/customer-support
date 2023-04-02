@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { CreateTicket, ResolveTicket } from "shared";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/role.guard';
@@ -17,8 +17,8 @@ export class TicketsController {
   @Roles('admin', 'support')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
-  async findAll() {
-    return this.ticketsService.findAll()
+  async findAll(@Query("pageNo") pageNo: number = 0, @Query("sortBy") sortBy: string = '') {
+    return this.ticketsService.findAll(pageNo, sortBy)
   }
 
   @Roles('admin', 'support')

@@ -11,3 +11,15 @@ export type CreateTicketSucces = {
 export type ResolveTicket = {
   resolution: string
 };
+
+
+export type AllTicketsResult = {
+  tickets: any[]
+  count: number
+}
+
+export const Constants = {
+  PageSize: 5
+};
+
+export const PageSize = () => 5;
