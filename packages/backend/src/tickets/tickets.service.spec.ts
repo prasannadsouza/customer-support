@@ -12,11 +12,24 @@ describe('TicketsService', () => {
       providers: [TicketsService],
       imports: [...TypeOrmSQLITETestingModule(User, Ticket)]
     }).compile();
-
     service = module.get<TicketsService>(TicketsService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should create ticket', async () => {
+    const testTicket = {
+      subject: 'testticket',
+      description: 'testdescription',
+      createdByEmail: 'testemail@test.com'
+    };
+
+    const ticket = await service.create(testTicket);
+    expect(ticket).toBeDefined()
+
+    const { count } = await service.findAll()
+    expect(count).toBe(1);
+  })
 });
