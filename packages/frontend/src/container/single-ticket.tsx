@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AlertMessage, ResolveTicket } from "shared";
 import useSwr, { useSWRConfig } from 'swr';
 import { Spinner } from "../components";
+import { PageAlert } from "../components/page-alert";
 import { LoginContext, useWrappedFetch } from "../model/user";
 import { Ticket } from "./all-tickets";
-import { PageAlert } from "../components/page-alert";
 
 export const SingleTicket = () => {
   const [loading, setLoading] = useState(false);
@@ -61,8 +61,13 @@ export const SingleTicket = () => {
     finally {
       setLoading(false);
     }
-    mutate('/api/tickets', [], { revalidate: true });
+    mutate(key => typeof key === 'string' && key.startsWith('/api/tickets?pageNo='), [], { revalidate: true });
     navigate('/support');
+  };
+
+  const buttonColor = () => {
+    const color = data?.assignedTo ? (data?.assignedTo.id == token?.id ? "green" : "blue") : "black";
+    return `w-full py-2 px-4 rounded-md bg-${color}-600 text-gray-100 font-semibold hover:bg-${color}-500`;
   };
 
   return (
@@ -136,7 +141,7 @@ export const SingleTicket = () => {
         </div>
         {data?.assignedTo === null || data?.resolved ? null : <button
           type="submit"
-          className="w-full py-2 px-4 rounded-md bg-green-600 text-gray-100 font-semibold hover:bg-green-500"
+          className={buttonColor()}
           disabled={data?.assignedTo?.id != token?.id}
         >
           {data?.assignedTo?.id == token?.id ? "Resolve" : `Assigned to ${data?.assignedTo?.email}`}
@@ -144,9 +149,8 @@ export const SingleTicket = () => {
 
       </form>
       <div
-        className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${
-          alertData ? "block" : "hidden"
-        }`}
+        className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${alertData ? "block" : "hidden"
+          }`}
       >
         <PageAlert alertMessage={alertData} closeMessage={closeMessage} />
       </div>

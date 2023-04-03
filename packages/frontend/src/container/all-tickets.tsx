@@ -3,9 +3,9 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { AlertMessage, AllTicketsResult } from "shared";
 import useSwr from "swr";
 import { Spinner } from "../components";
+import { PageAlert } from "../components/page-alert";
 import { Pagination } from "../components/pagination";
 import { LoginContext, useWrappedFetch } from "../model/user";
-import { PageAlert } from "../components/page-alert";
 
 export type Ticket = {
   id: number;
@@ -86,10 +86,7 @@ export const TicketList = () => {
     return `bg-${color}-600 text-gray-100 px-3 py-1 rounded-md hover:bg-${color}-500`;
   };
 
-  const assigned =
-    data?.tickets.find(
-      (item) => item.assignedTo?.id === token?.id && item.resolved === false
-    ) ?? false;
+  const assigned = data?.myTicket ?? false;
 
   if (assigned) {
     return <Navigate to={`/support/${assigned.id}`} />;
@@ -98,9 +95,8 @@ export const TicketList = () => {
   return (
     <div className="w-full max-w-4xl p-4">
       <div
-        className={`absolute inset-0 rounded-md bg-black bg-opacity-50 z-10 flex justify-center items-center ${
-          loading ? "block" : "hidden"
-        }`}
+        className={`absolute inset-0 rounded-md bg-black bg-opacity-50 z-10 flex justify-center items-center ${loading ? "block" : "hidden"
+          }`}
       >
         <Spinner />
       </div>
@@ -117,30 +113,30 @@ export const TicketList = () => {
           </thead>
           <tbody>
             {data
-              ? data.tickets.map((item) => (
-                  <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
-                    <td className="px-4 py-2 text-gray-300">{item.id}</td>
-                    <td className="px-4 py-2 text-gray-300">{item.subject}</td>
-                    <td className="px-4 py-2 text-gray-300">
-                      {new Date(Date.parse(item.createdAt)).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-2 text-gray-300">
-                      {item.assignedTo?.email}
-                    </td>
-                    <td className="px-4 py-2">
-                      <button
-                        onClick={() => tryAssignTicket(item)}
-                        className={getButtonColor(!!item.assignedTo)}
-                      >
-                        {!!item.assignedTo
-                          ? item.resolved
-                            ? "Done"
-                            : "In Progress"
-                          : "Handle"}
-                      </button>
-                    </td>
-                  </tr>
-                ))
+              ? data.tickets?.map((item) => (
+                <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
+                  <td className="px-4 py-2 text-gray-300">{item.id}</td>
+                  <td className="px-4 py-2 text-gray-300">{item.subject}</td>
+                  <td className="px-4 py-2 text-gray-300">
+                    {new Date(Date.parse(item.createdAt)).toLocaleString()}
+                  </td>
+                  <td className="px-4 py-2 text-gray-300">
+                    {item.assignedTo?.email}
+                  </td>
+                  <td className="px-4 py-2">
+                    <button
+                      onClick={() => tryAssignTicket(item)}
+                      className={getButtonColor(!!item.assignedTo)}
+                    >
+                      {!!item.assignedTo
+                        ? item.resolved
+                          ? "Done"
+                          : "In Progress"
+                        : "Handle"}
+                    </button>
+                  </td>
+                </tr>
+              ))
               : null}
           </tbody>
         </table>
@@ -151,9 +147,8 @@ export const TicketList = () => {
         count={data?.count}
       />
       <div
-        className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${
-          alertData ? "block" : "hidden"
-        }`}
+        className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${alertData ? "block" : "hidden"
+          }`}
       >
         <PageAlert alertMessage={alertData} closeMessage={closeMessage} />
       </div>

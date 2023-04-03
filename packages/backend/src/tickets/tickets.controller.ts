@@ -17,8 +17,9 @@ export class TicketsController {
   @Roles('admin', 'support')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
-  async findAll(@Query("pageNo") pageNo: number = 0, @Query("sortBy") sortBy: string = '') {
-    return this.ticketsService.findAll(pageNo, sortBy)
+  async findAll(@Query("pageNo") pageNo: number = 0, @Query("sortBy") sortBy: string = '',
+    @Request() req: any) {
+    return this.ticketsService.findAll(req.user.id, pageNo, sortBy)
   }
 
   @Roles('admin', 'support')
