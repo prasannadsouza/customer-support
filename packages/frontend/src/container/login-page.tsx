@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { Token } from "shared";
+import { AlertMessage, Token } from "shared";
 import { Spinner } from "../components";
 import { LoginContext } from "../model/user";
+import { PageAlert } from "../components/page-alert";
 
 type UserLoginInfo = {
   email: string
@@ -12,7 +13,11 @@ type UserLoginInfo = {
 export const LoginPage = () => {
   const authContext = useContext(LoginContext);
   const [loading, setLoading] = useState(false);
+  const [alertData, setShowAlert] = useState<AlertMessage| null>(null);
 
+  const closeMessage = () => {
+    setShowAlert(null);
+  }
   const submit = async (e: any) => {
     e.preventDefault();
     if (loading) {
@@ -34,6 +39,7 @@ export const LoginPage = () => {
         body: JSON.stringify(data),
       });
       if (!resp.ok) {
+        setShowAlert({isError:true,message:resp.statusText});
         return
       }
 
@@ -93,6 +99,9 @@ export const LoginPage = () => {
         >
           Login
         </button>
+        <div className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${alertData ? 'block' : 'hidden'}`} >
+          <PageAlert alertMessage={alertData}  closeMessage={closeMessage} />
+        </div>
       </form>
     </div>
   );

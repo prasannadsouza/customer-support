@@ -34,6 +34,7 @@ export class TicketsController {
   async assignTicket(@Param('id') id: number, @Request() req: any) {
     const userId = req.user.id;
     try {
+      console.log("userid", userId, "ticketid", id);
       return await this.ticketsService.assignTicket(userId, id);
     } catch (error: unknown) {
       if (error instanceof TicketsServiceError) {

@@ -85,6 +85,7 @@ export class TicketsService {
   async assignTicket(userId: number, ticketId: number) {
     var alreadyAssigned = await this.ticketRepository
       .exist({ where: { assignedToId: userId, resolved: false } });
+      console.log("userid", userId, "ticketid", ticketId)
     if (alreadyAssigned) {
       throw new TicketsServiceError("user already has ticket");
     }
