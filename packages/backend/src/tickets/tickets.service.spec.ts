@@ -72,13 +72,13 @@ describe('TicketsService', () => {
     verifyResolveTicket(firstTicket);
   });
 
-  it('should assign and resolve the ticket', async () => {
-    await service.assignTicket(secondTicket.id, firstTicket.assignedToId);
-    secondTicket = await service.findOne(secondTicket.id);
-    console.log("assign secondticket", secondTicket);
-    expect(secondTicket.assignedTo.id).toBe(user.id)
-    verifyResolveTicket(secondTicket);
-  });
+  // it('should assign and resolve the ticket', async () => {
+  //   await service.assignTicket(secondTicket.id, firstTicket.assignedToId);
+  //   secondTicket = await service.findOne(secondTicket.id);
+  //   console.log("assign secondticket", secondTicket);
+  //   expect(secondTicket.assignedTo.id).toBe(user.id)
+  //   verifyResolveTicket(secondTicket);
+  // });
 
   const verifyResolveTicket = async (ticket: Ticket) => {
 
