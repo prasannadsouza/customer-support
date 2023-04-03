@@ -42,6 +42,10 @@ export class UsersService implements OnModuleInit {
     return this.usersRepository.find();
   }
 
+  async removeAll(): Promise<void> {
+    await this.usersRepository.clear();
+  }
+
   async remove(id: number): Promise<void> {
     const user = await this.usersRepository.findOneBy({ id });
     console.log("removeing user", user);
