@@ -1,8 +1,11 @@
-name: Test Backend
+name: Backend Tests
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
+    paths:
+      - packages/backend/**
+      - packages/shared/**
 
 jobs:
   test:
