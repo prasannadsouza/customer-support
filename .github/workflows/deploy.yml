@@ -38,6 +38,14 @@ jobs:
         run: pnpm add ./shared-1.0.0.tgz
         working-directory: ./packages/frontend
 
+      - name: Build frontend
+        run: pnpm run build
+        working-directory: ./packages/frontend
+
+      - name: Build backend
+        run: pnpm run build
+        working-directory: ./packages/backend
+
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
@@ -47,7 +55,7 @@ jobs:
       - id: 'deploy'
         uses: 'google-github-actions/deploy-appengine@v1'
         with:
-          project_id: 'prasanna-test-382619'
+          project_id: ${{ secrets.PROJECT_ID }}
           deliverables: packages/backend/backend.yml packages/frontend/client.yml dispatch.yaml
           env_vars: |-
             ADMINUSER=${{ secrets.ADMINUSER }}
