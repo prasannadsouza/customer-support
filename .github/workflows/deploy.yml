@@ -48,7 +48,7 @@ jobs:
         uses: 'google-github-actions/deploy-appengine@v1'
         with:
           project_id: 'prasanna-test-382619'
-          deliverables: packages/backend/backend.yml packages/frontend/client.yml dispatch.yml
+          deliverables: packages/backend/backend.yml packages/frontend/client.yml dispatch.yaml
           env_vars: |-
             ADMINUSER=${{ secrets.ADMINUSER }}
             ADMINPASSWORD=${{ secrets.ADMINPASSWORD }}
