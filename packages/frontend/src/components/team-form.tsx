@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { NewUser } from "shared";
+import { AlertMessage, NewUser } from "shared";
 import { useSWRConfig } from 'swr';
 import { useWrappedFetch } from "../model/user";
 import { Spinner } from "./spinner";
+import { PageAlert } from "./page-alert";
 
 const roleList = ['support', 'admin'];
 
@@ -10,6 +11,11 @@ export const TeamForm = () => {
   const [loading, setLoading] = useState(false);
   const wrappedFetch = useWrappedFetch();
   const { mutate } = useSWRConfig();
+  const [alertData, setShowAlert] = useState<AlertMessage| null>(null);
+
+  const closeMessage = () => {
+    setShowAlert(null);
+  }
 
   const submit = async (e: any) => {
     e.preventDefault();
@@ -32,6 +38,7 @@ export const TeamForm = () => {
         body: JSON.stringify(data),
       });
       if (!resp.ok) {
+        setShowAlert({isError:true,message:resp.statusText});
         return;
       }
 
@@ -59,6 +66,7 @@ export const TeamForm = () => {
         placeholder="Email"
         className="rounded-md bg-gray-700 text-gray-300"
         name="email"
+        autoComplete="newemail"
         required
       />
       <input
@@ -67,6 +75,7 @@ export const TeamForm = () => {
         placeholder="Password"
         className="rounded-md bg-gray-700 text-gray-300"
         name="password"
+        autoComplete="newpassword"
         required
       />
       <select
@@ -88,6 +97,9 @@ export const TeamForm = () => {
       >
         Create User
       </button>
+      <div className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${alertData ? 'block' : 'hidden'}`} >
+          <PageAlert alertMessage={alertData}  closeMessage={closeMessage} />
+        </div>
     </form>
   );
 };

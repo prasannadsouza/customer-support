@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ResolveTicket } from "shared";
+import { AlertMessage, ResolveTicket } from "shared";
 import useSwr, { useSWRConfig } from 'swr';
 import { Spinner } from "../components";
 import { LoginContext, useWrappedFetch } from "../model/user";
 import { Ticket } from "./all-tickets";
+import { PageAlert } from "../components/page-alert";
 
 export const SingleTicket = () => {
   const [loading, setLoading] = useState(false);
@@ -14,13 +15,19 @@ export const SingleTicket = () => {
   const { token } = useContext(LoginContext);
   const wrappedFetch = useWrappedFetch();
   const navigate = useNavigate();
+  const [alertData, setShowAlert] = useState<AlertMessage | null>(null);
+
+  const closeMessage = () => {
+    setShowAlert(null);
+  };
 
   if (isLoading) {
-    return <div>Loading</div>
+    return <div className='text-red-100'>Loading</div>
   }
 
   if (error) {
-    return <div>Error</div>
+    console.log(error);
+    return <div className='text-red-100'>{error.message}</div>
   }
 
   const onSubmit = async (e: any) => {
@@ -44,6 +51,7 @@ export const SingleTicket = () => {
         body: JSON.stringify(data),
       });
       if (!resp.ok) {
+        setShowAlert({ isError: true, message: resp.statusText });
         return;
       }
     }
@@ -126,14 +134,22 @@ export const SingleTicket = () => {
             name="resolution"
           ></textarea>}
         </div>
-        {data?.resolved ? null : <button
+        {data?.assignedTo === null || data?.resolved ? null : <button
           type="submit"
           className="w-full py-2 px-4 rounded-md bg-green-600 text-gray-100 font-semibold hover:bg-green-500"
           disabled={data?.assignedTo?.id != token?.id}
         >
-          {data?.assignedTo?.id == token?.id ? "Resolve" : `Assigned to ${data?.assignedTo.email}`}
+          {data?.assignedTo?.id == token?.id ? "Resolve" : `Assigned to ${data?.assignedTo?.email}`}
         </button>}
+
       </form>
+      <div
+        className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${
+          alertData ? "block" : "hidden"
+        }`}
+      >
+        <PageAlert alertMessage={alertData} closeMessage={closeMessage} />
+      </div>
     </div>
   );
 };

@@ -1,14 +1,29 @@
 import { useContext, useState } from 'react';
-import { FrontendUser } from 'shared';
+import { AlertMessage, FrontendUser } from 'shared';
 import useSwr from 'swr';
 import { LoginContext, useWrappedFetch } from '../model/user';
 import { Spinner } from './spinner';
+import { PageAlert } from './page-alert';
 
 export const TeamList = () => {
   const { data, error, isLoading, mutate } = useSwr<FrontendUser[]>('/api/users');
   const [deleteLoading, setDeleteLoading] = useState(false);
   const { token } = useContext(LoginContext);
   const wrappedFetcher = useWrappedFetch();
+  const [alertData, setShowAlert] = useState<AlertMessage| null>(null);
+
+  const closeMessage = () => {
+    setShowAlert(null);
+  }
+
+  if (isLoading) {
+    return <div className='text-red-100'>Loading</div>
+  }
+
+  if (error) {
+    console.log(error);
+    return <div className='text-red-100'>{error.message}</div>
+  }
 
   const removeUser = async (id: number) => {
     if (deleteLoading || isLoading) {
@@ -25,6 +40,7 @@ export const TeamList = () => {
         }
       });
       if (!resp.ok) {
+        setShowAlert({isError:true,message:resp.statusText});
         return;
       }
 
@@ -79,6 +95,10 @@ export const TeamList = () => {
           </tbody>
         </table>
       </div>
+      <div className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${alertData ? 'block' : 'hidden'}`} >
+          <PageAlert alertMessage={alertData}  closeMessage={closeMessage} />
+        </div>
     </div>
+
   )
 }

@@ -1,12 +1,18 @@
 import { useState } from "react";
-import { CreateTicket, CreateTicketSucces } from "shared";
+import { AlertMessage, CreateTicket, CreateTicketSucces } from "shared";
 import { Spinner } from "./spinner";
+import { PageAlert } from "./page-alert";
 
 const itemList = ['Item 1', 'Item 2', 'Item 3', 'Item 4'];
 
 export const CustomerForm = () => {
   const [loading, setLoading] = useState(false);
   const [lastId, setLastId] = useState<number | null>(null);
+  const [alertData, setShowAlert] = useState<AlertMessage| null>(null);
+
+  const closeMessage = () => {
+    setShowAlert(null);
+  }
 
   const submit = async (e: any) => {
     e.preventDefault();
@@ -31,6 +37,7 @@ export const CustomerForm = () => {
         body: JSON.stringify(data),
       });
       if (!resp.ok) {
+        setShowAlert({isError:true,message:resp.statusText});
         return;
       }
 
@@ -104,6 +111,9 @@ export const CustomerForm = () => {
           Send
         </button>
         {lastId ? <div className="w-full py-2 px-4 text-white">Your ticket number: {lastId}</div> : null}
+        <div className={`absolute inset-0 rounded-md bg-black bg-opacity-70  flex items-center justify-center h-screen ${alertData ? 'block' : 'hidden'}`} >
+          <PageAlert alertMessage={alertData}  closeMessage={closeMessage} />
+        </div>
       </form>
     </>
   );
