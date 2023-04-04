@@ -1,0 +1,11 @@
+{
+  "name": "customer-support",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {},
+  "keywords": [],
+  "author": "Prasanna D'Souza",
+  "devDependencies": {
+    "typescript": "^5.0.3"
+  }
+}
