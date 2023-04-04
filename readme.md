@@ -1,6 +1,10 @@
 # Customer Support App
 **Link to App** https://versatile-topic-162112.ew.r.appspot.com/ 
 
+Please refer to diagrams\
+SystemDiagram.drawio (System diagrams)
+Functions.drawio (Function diagrams)
+
 ##  Description
 The customer support app facilitates return of products from  the customer. 
 It is used both by employees and customers. Employees login to the app  to view and handle tickets.
