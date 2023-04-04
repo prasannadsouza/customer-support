@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AllTicketsResult, CreateTicket } from 'shared';
 import { User } from 'src/users/user.entity';
-import { Repository } from 'typeorm';
+import { Any, Not, Repository } from 'typeorm';
 import { Ticket } from './ticket.entity';
+
+const pageSize = 5;
 
 @Injectable()
 export class TicketsService {
@@ -35,17 +37,26 @@ export class TicketsService {
     return created;
   }
 
-  async findAll(pageNo: number = 0, sortBy: string = ''): Promise<AllTicketsResult> {
+  async findAll(id: number, pageNo: number = 0, sortBy: string = ''): Promise<AllTicketsResult> {
+    const myTicket = await this.ticketRepository.findOneBy({ assignedToId: id, resolved: false });
     const tickets = await this.ticketRepository.find({
       relations: {
         assignedTo: true
       },
-      take: 5,
-      skip: pageNo * 5,
+      order: {
+        resolved: "ASC",
+        assignedToId: {
+          direction: "DESC",
+          nulls: "FIRST"
+        },
+        createdAt: "DESC"
+      },
+      take: myTicket ? pageSize - 1 : pageSize,
+      skip: pageNo * (myTicket ? (pageSize - 1) : pageSize),
     });
     const count = await this.ticketRepository.count();
 
-    return { tickets, count };
+    return { tickets, count, myTicket };
   }
 
   async findOne(id: number): Promise<Ticket> {
@@ -62,7 +73,7 @@ export class TicketsService {
   async remove(id: number): Promise<void> {
     const ticket = await this.ticketRepository.findOneBy({ id });
     console.log("removeing ticket", ticket);
-   await this.ticketRepository.delete(id);
+    await this.ticketRepository.delete(id);
   }
 
   async resolveTicket(ticketId: number, userId: number, resolution: string) {
@@ -91,7 +102,6 @@ export class TicketsService {
   async assignTicket(userId: number, ticketId: number) {
     var alreadyAssigned = await this.ticketRepository
       .exist({ where: { assignedToId: userId, resolved: false } });
-
     if (alreadyAssigned) {
       throw new TicketsServiceError("user already has ticket");
     }

@@ -14,6 +14,7 @@ export type ResolveTicket = {
 
 
 export type AllTicketsResult = {
+  myTicket: any
   tickets: any[]
   count: number
 }
