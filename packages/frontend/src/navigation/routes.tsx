@@ -1,20 +1,38 @@
 import {
-  createBrowserRouter,
-  RouterProvider,
+    createBrowserRouter,
+    RouterProvider,
 } from "react-router-dom";
-import { LoginPage } from "../container";
+import { LoginPage, HomeLayout, AllTickets, HomePage } from "../container";
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <div>Hello world!</div>,
-  },
-  {
-    path: "/login",
-    element: <LoginPage/>
-  }
+    {
+        path: "/",
+      element: <HomePage/>,
+    },
+    {
+        path: "/support",
+        element: <HomeLayout />,
+        children: [
+            {
+                path: "",
+                element: <AllTickets />,
+            },
+            {
+                path: ":id",
+                element: <div>single ticket</div>,
+            },
+        ]
+    },
+    {
+        path: "/login",
+        element: <LoginPage />,
+    },
+    {
+        path: "/admin",
+        element: <div>Team</div>,
+    }
 ]);
 
 export const Navigation = () => {
-  return <RouterProvider router={router} />;
+    return <RouterProvider router={router} />;
 };
