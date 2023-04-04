@@ -55,7 +55,7 @@ jobs:
         uses: 'google-github-actions/deploy-appengine@v1'
         with:
           project_id: ${{ secrets.PROJECT_ID }}
-          deliverables: packages/backend/backend.yml packages/frontend/client.yml dispatch.yaml
+          deliverables: packages/frontend/client.yml packages/backend/backend.yml dispatch.yaml
           env_vars: |-
             ADMINUSER=${{ secrets.ADMINUSER }}
             ADMINPASSWORD=${{ secrets.ADMINPASSWORD }}
