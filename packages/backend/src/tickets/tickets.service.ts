@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTicket } from 'shared';
+import { AllTicketsResult, Constants, CreateTicket } from 'shared';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { Ticket } from './ticket.entity';
@@ -35,12 +35,17 @@ export class TicketsService {
     return created;
   }
 
-  async findAll(): Promise<Ticket[]> {
-    return await this.ticketRepository.find({
+  async findAll(pageNo: number = 0, sortBy: string = ''): Promise<AllTicketsResult> {
+    const tickets = await this.ticketRepository.find({
       relations: {
         assignedTo: true
-      }
+      },
+      take: 5,
+      skip: pageNo * 5,
     });
+    const count = await this.ticketRepository.count();
+
+    return { tickets, count };
   }
 
   async findOne(id: number): Promise<Ticket> {

@@ -1,7 +1,9 @@
 import { useContext, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { AllTicketsResult } from 'shared';
 import useSwr from 'swr';
 import { Spinner } from '../components';
+import { Pagination } from '../components/pagination';
 import { LoginContext, useWrappedFetch } from '../model/user';
 
 export type Ticket = {
@@ -17,7 +19,8 @@ export type Ticket = {
 }
 
 export const TicketList = () => {
-  const { data, error, isLoading, mutate } = useSwr<Ticket[]>('/api/tickets');
+  const [pageNumber, setPageNumber] = useState(0);
+  const { data, error, isLoading, mutate } = useSwr<AllTicketsResult>(`/api/tickets?pageNo=${pageNumber}`);
   const [assignLoading, setAssignLoading] = useState(false);
   const wrappedFetch = useWrappedFetch();
   const { token } = useContext(LoginContext);
@@ -70,7 +73,7 @@ export const TicketList = () => {
     return `bg-${color}-600 text-gray-100 px-3 py-1 rounded-md hover:bg-${color}-500`;
   }
 
-  const assigned = data?.find(item => item.assignedTo?.id === token?.id && item.resolved === false) ?? false;
+  const assigned = data?.tickets.find(item => item.assignedTo?.id === token?.id && item.resolved === false) ?? false;
 
   if (assigned) {
     return <Navigate to={`/support/${assigned.id}`} />
@@ -93,7 +96,7 @@ export const TicketList = () => {
             </tr>
           </thead>
           <tbody>
-            {data ? data.map((item) => (
+            {data ? data.tickets.map((item) => (
               <tr key={item.id} className="bg-gray-700 hover:bg-gray-600">
                 <td className="px-4 py-2 text-gray-300">{item.id}</td>
                 <td className="px-4 py-2 text-gray-300">{item.subject}</td>
@@ -111,6 +114,7 @@ export const TicketList = () => {
           </tbody>
         </table>
       </div>
+      <Pagination pageNumber={pageNumber} setPageNumber={setPageNumber} count={data?.count} />
     </div>
   );
 };
