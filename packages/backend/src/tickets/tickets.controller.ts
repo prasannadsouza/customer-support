@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { CreateTicket } from "shared";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { CreateTicket, ResolveTicket } from "shared";
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/role.guard';
 import { Roles } from 'src/auth/roles.decorator';
-import { ResolveTicket, TicketsService, TicketsServiceError } from './tickets.service';
+import { TicketsService, TicketsServiceError } from './tickets.service';
 
 @Controller('tickets')
 export class TicketsController {
@@ -13,18 +15,24 @@ export class TicketsController {
   }
 
   @Roles('admin', 'support')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   async findAll() {
     return this.ticketsService.findAll()
   }
 
+  @Roles('admin', 'support')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return `This action returns a #${id} cat`;
+  findOne(@Param('id') id: number) {
+    return this.ticketsService.findOne(id);
   }
 
-  @Put(':id/:userId') // from auth in future
-  async assignTicket(@Param('id') id: number, @Param('userId') userId: number) {
+  @Roles('admin', 'support')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Put(':id')
+  async assignTicket(@Param('id') id: number, @Request() req: any) {
+    const userId = req.user.id;
     try {
       return await this.ticketsService.assignTicket(userId, id);
     } catch (error: unknown) {
@@ -39,9 +47,12 @@ export class TicketsController {
     }
   }
 
-  @Put(':id/:userId/resolve') // from auth in future
-  async resolveTicket(@Param('id') id: number, @Param('userId') userId: number,
+  @Roles('admin', 'support')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Put(':id/resolve')
+  async resolveTicket(@Param('id') id: number, @Request() req: any,
     @Body() { resolution }: ResolveTicket) {
+    const userId = req.user.id;
     try {
       return await this.ticketsService.resolveTicket(id, userId, resolution);
     } catch (error: unknown) {

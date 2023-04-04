@@ -1,13 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { NewUser } from 'shared';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
-
-export type NewUser = {
-  email: string
-  password: string
-  role: string
-}
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -17,7 +12,11 @@ export class UsersService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    if (await this.usersRepository.count() == 0) {
+    if (!await this.usersRepository.exist({
+      where: {
+        email: process.env.ADMINUSER,
+      }
+    })) {
       await this.addUser({
         email: process.env.ADMINUSER,
         password: process.env.ADMINPASSWORD,
@@ -44,6 +43,13 @@ export class UsersService implements OnModuleInit {
   }
 
   async remove(id: number): Promise<void> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (user.email === process.env.ADMINUSER) {
+      throw new UserServiceError("not allowed to delete admin");
+    }
+
     await this.usersRepository.delete(id);
   }
 }
+
+export class UserServiceError extends Error {}

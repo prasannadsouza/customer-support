@@ -30,6 +30,10 @@ export const CustomerForm = () => {
         },
         body: JSON.stringify(data),
       });
+      if (!resp.ok) {
+        return;
+      }
+
       const val = await resp.json() as CreateTicketSucces;
       console.log(val);
       form.reset();

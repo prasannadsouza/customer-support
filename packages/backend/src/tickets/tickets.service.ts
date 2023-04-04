@@ -5,10 +5,6 @@ import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { Ticket } from './ticket.entity';
 
-export type ResolveTicket = {
-  resolution: string
-};
-
 @Injectable()
 export class TicketsService {
   constructor(
@@ -40,15 +36,25 @@ export class TicketsService {
   }
 
   async findAll(): Promise<Ticket[]> {
-    return await this.ticketRepository.find();
+    return await this.ticketRepository.find({
+      relations: {
+        assignedTo: true
+      }
+    });
+  }
+
+  async findOne(id: number): Promise<Ticket> {
+    return await this.ticketRepository.findOne({
+      relations: {
+        assignedTo: true
+      },
+      where: {
+        id: id,
+      }
+    });
   }
 
   async resolveTicket(ticketId: number, userId: number, resolution: string) {
-    let user = await this.userRepository.findOneBy({ id: userId });
-    if (user == null) {
-      throw new TicketsServiceError("user not found");
-    }
-
     var alreadyAssigned = await this.ticketRepository
       .exist({
         where: {
@@ -61,6 +67,10 @@ export class TicketsService {
       throw new TicketsServiceError("ticket not assigned to user");
     }
 
+    if (resolution == "") {
+      throw new TicketsServiceError("resolution needed");
+    }
+
     const result = await this.ticketRepository.update(ticketId, { resolved: true, resolution });
     if (result.affected < 1) {
       throw new TicketsServiceError("ticket not found");
@@ -68,18 +78,13 @@ export class TicketsService {
   }
 
   async assignTicket(userId: number, ticketId: number) {
-    let user = await this.userRepository.findOneBy({ id: userId });
-    if (user == null) {
-      throw new TicketsServiceError("user not found");
-    }
-
     var alreadyAssigned = await this.ticketRepository
       .exist({ where: { assignedToId: userId, resolved: false } });
     if (alreadyAssigned) {
       throw new TicketsServiceError("user already has ticket");
     }
 
-    const result = await this.ticketRepository.update(ticketId, { assignedTo: user });
+    const result = await this.ticketRepository.update(ticketId, { assignedToId: userId });
     if (result.affected < 1) {
       throw new TicketsServiceError("ticket not found");
     }
