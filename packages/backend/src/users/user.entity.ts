@@ -1,10 +1,8 @@
-import { Ticket } from 'src/tickets/ticket.entity'
 import {
-  Entity,
   Column,
-  UpdateDateColumn,
+  Entity,
   PrimaryGeneratedColumn,
-  OneToMany,
+  UpdateDateColumn,
 } from 'typeorm'
 
 @Entity()
@@ -12,10 +10,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   email: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, select: false })
   password: string
 
   @Column({ nullable: false })

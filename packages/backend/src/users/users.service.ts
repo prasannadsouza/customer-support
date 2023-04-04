@@ -26,20 +26,21 @@ export class UsersService implements OnModuleInit {
     }
   }
 
-  async addUser(user : NewUser) {
-    this.usersRepository.save(user);
+  async addUser(user: NewUser) {
+    await this.usersRepository.save(user);
   }
 
   async findOne(email: string): Promise<User | undefined> {
-    return this.usersRepository.findOne({ where: { email }});
+    return this.usersRepository.findOne({
+      select: {
+        email: true, id: true, password: true, role: true
+      },
+      where: { email }
+    });
   }
 
   findAll(): Promise<User[]> {
     return this.usersRepository.find();
-  }
-
-  findOneById(id: number): Promise<User | null> {
-    return this.usersRepository.findOneBy({ id });
   }
 
   async remove(id: number): Promise<void> {

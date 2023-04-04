@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Ticket } from './ticket.entity';
-import { Repository, In, Not, IsNull } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateTicket } from 'shared';
 import { User } from 'src/users/user.entity';
-
-export type CreateTicket = {
-  subject: string
-  description: string
-  createdByEmail: string
-};
+import { Repository } from 'typeorm';
+import { Ticket } from './ticket.entity';
 
 export type ResolveTicket = {
   resolution: string
@@ -23,14 +18,14 @@ export class TicketsService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(ticket: CreateTicket) : Promise<Ticket>{
+  async create(ticket: CreateTicket): Promise<Ticket> {
     const user = await this.userRepository.createQueryBuilder('u')
       .leftJoin((qb) => qb
         .distinctOn(['assignedToId'])
         .from(Ticket, 'ticket')
-        .where('ticket.resolved != :resolved',{
+        .where('ticket.resolved != :resolved', {
           resolved: true
-        }),'unresolved_tickets', 'u.id = unresolved_tickets.assignedToId')
+        }), 'unresolved_tickets', 'u.id = unresolved_tickets.assignedToId')
       .where('unresolved_tickets.assignedToId IS NULL')
       .limit(1).getOne();
 
@@ -79,7 +74,7 @@ export class TicketsService {
     }
 
     var alreadyAssigned = await this.ticketRepository
-      .exist({ where: { assignedToId: userId, resolved: false }});
+      .exist({ where: { assignedToId: userId, resolved: false } });
     if (alreadyAssigned) {
       throw new TicketsServiceError("user already has ticket");
     }
@@ -91,4 +86,4 @@ export class TicketsService {
   }
 }
 
-export class TicketsServiceError extends Error { }
+export class TicketsServiceError extends Error {}

@@ -1,5 +1,7 @@
-import { Body, Controller, Get, Param, Post, Query, Put, Delete, HttpException, HttpStatus } from '@nestjs/common';
-import { CreateTicket, ResolveTicket, TicketsService, TicketsServiceError } from './tickets.service';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { CreateTicket } from "shared";
+import { Roles } from 'src/auth/roles.decorator';
+import { ResolveTicket, TicketsService, TicketsServiceError } from './tickets.service';
 
 @Controller('tickets')
 export class TicketsController {
@@ -10,6 +12,7 @@ export class TicketsController {
     return this.ticketsService.create(ticket);
   }
 
+  @Roles('admin', 'support')
   @Get()
   async findAll() {
     return this.ticketsService.findAll()
