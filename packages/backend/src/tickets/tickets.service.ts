@@ -76,6 +76,10 @@ export class TicketsService {
     await this.ticketRepository.delete(id);
   }
 
+  async removeAll(): Promise<void> {
+    await this.ticketRepository.clear();
+  }
+
   async resolveTicket(ticketId: number, userId: number, resolution: string) {
     var alreadyAssigned = await this.ticketRepository
       .exist({

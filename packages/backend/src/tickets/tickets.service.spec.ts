@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmSQLITETestingModule } from 'src/test-utils/typeorm-sqlite-testingmodule';
 import { User } from 'src/users/user.entity';
+import { UsersService } from 'src/users/users.service';
 import { Ticket } from './ticket.entity';
 import { TicketsService } from './tickets.service';
-import { UsersService } from 'src/users/users.service';
 
 describe('TicketsService', () => {
   let service: TicketsService;
-  let usersService: UsersService; 
+  let usersService: UsersService;
   let user: User;
   let firstTicket: Ticket;
   let secondTicket: Ticket;
@@ -19,17 +19,17 @@ describe('TicketsService', () => {
     }).compile();
     service = module.get<TicketsService>(TicketsService);
     usersService = module.get<UsersService>(UsersService);
-    await clearAllTickets();
-    await clearAllUsers();
-    await usersService.addUser({ email: "test@test.com",password:"test", role:"admin" });
-    user = await usersService.findAll()[0];
+    await usersService.addUser({ email: "test@test.com", password: "test", role: "admin" });
+    const allUsers = await usersService.findAll();
+    user = allUsers[0];
+    console.log(user);
   });
 
- afterAll(async () => {
+  afterAll(async () => {
     await clearAllTickets();
     await clearAllUsers();
-  }) 
- 
+  })
+
 
   it('should be defined', () => {
     expect(service).toBeDefined();
@@ -45,7 +45,7 @@ describe('TicketsService', () => {
     firstTicket = await service.create(testTicket);
     expect(firstTicket).toBeDefined()
 
-    const { count, tickets } = await service.findAll()
+    const { count, tickets } = await service.findAll(user.id)
     expect(count).toBe(1);
     expect(firstTicket.assignedToId).toBe(user.id);
     console.log("firstticket", firstTicket);
@@ -60,7 +60,7 @@ describe('TicketsService', () => {
 
     secondTicket = await service.create(testTicket);
     expect(secondTicket).toBeDefined()
-    const { count } = await service.findAll()
+    const { count } = await service.findAll(user.id)
     expect(count).toBe(2);
 
     secondTicket = await service.findOne(secondTicket.id);
@@ -81,7 +81,7 @@ describe('TicketsService', () => {
   });
 
   const verifyResolveTicket = async (ticket: Ticket) => {
-    
+
     await service.resolveTicket(ticket.id, ticket.assignedToId, "resolved");
     ticket = await service.findOne(ticket.id);
     expect(ticket.resolved).toBeTruthy()
@@ -89,13 +89,12 @@ describe('TicketsService', () => {
     console.log("resolvedticket", ticket);
   }
 
-  const clearAllTickets = async() => {
-    const { tickets } = await service.findAll();
-    tickets.forEach(async (e)=> await service.remove(e.Id));
+  const clearAllTickets = async () => {
+    await service.removeAll();
   }
 
-  const clearAllUsers = async() => {
+  const clearAllUsers = async () => {
     const users = await usersService.findAll();
-    users.forEach(async (e)=> await usersService.remove(e.id));
+    users.forEach(async (e) => await usersService.remove(e.id));
   }
 });
