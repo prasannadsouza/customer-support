@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - 'v*'
+
+jobs:
+  backend:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.1.0
+      - name: Use Node.js 19.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19.x
+          cache: 'pnpm'
+      - name: Install npm dependencies
+        run: pnpm install
+
+      - name: Copy shared
+        run: pnpm pack --pack-destination=../backend && pnpm pack --pack-destination=../frontend
+        working-directory: ./packages/shared
+
+      - name: Install shared in backend
+        run: pnpm add ./shared-1.0.0.tgz
+        working-directory: ./packages/backend
+
+      - name: Install shared in frontend
+        run: pnpm add ./shared-1.0.0.tgz
+        working-directory: ./packages/frontend
+
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_JSON }}'
+
+      - id: 'deploy'
+        uses: 'google-github-actions/deploy-appengine@v1'
+        with:
+          project_id: 'prasanna-test-382619'
+          deliverables: packages/backend/backend.yml packages/frontend/client.yml dispatch.yml
+          env_vars: |-
+            ADMINUSER=${{ secrets.ADMINUSER }}
+            ADMINPASSWORD=${{ secrets.ADMINPASSWORD }}
+            JWTSECRET=${{ secrets.JWTSECRET }}
