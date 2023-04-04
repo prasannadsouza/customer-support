@@ -44,6 +44,7 @@ export class UsersService implements OnModuleInit {
 
   async remove(id: number): Promise<void> {
     const user = await this.usersRepository.findOneBy({ id });
+    console.log("removeing user", user);
     if (user.email === process.env.ADMINUSER) {
       throw new UserServiceError("not allowed to delete admin");
     }

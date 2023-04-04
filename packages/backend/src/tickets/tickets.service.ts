@@ -59,6 +59,12 @@ export class TicketsService {
     });
   }
 
+  async remove(id: number): Promise<void> {
+    const ticket = await this.ticketRepository.findOneBy({ id });
+    console.log("removeing ticket", ticket);
+   await this.ticketRepository.delete(id);
+  }
+
   async resolveTicket(ticketId: number, userId: number, resolution: string) {
     var alreadyAssigned = await this.ticketRepository
       .exist({
@@ -85,7 +91,7 @@ export class TicketsService {
   async assignTicket(userId: number, ticketId: number) {
     var alreadyAssigned = await this.ticketRepository
       .exist({ where: { assignedToId: userId, resolved: false } });
-      console.log("userid", userId, "ticketid", ticketId)
+
     if (alreadyAssigned) {
       throw new TicketsServiceError("user already has ticket");
     }
