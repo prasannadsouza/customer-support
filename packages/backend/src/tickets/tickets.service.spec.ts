@@ -11,6 +11,7 @@ describe('TicketsService', () => {
   let user: User;
   let firstTicket: Ticket;
   let secondTicket: Ticket;
+  let thirdTicket: Ticket;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,14 +23,12 @@ describe('TicketsService', () => {
     await usersService.addUser({ email: "test@test.com", password: "test", role: "admin" });
     const allUsers = await usersService.findAll();
     user = allUsers[0];
-    console.log(user);
   });
 
   afterAll(async () => {
-    await clearAllTickets();
-    await clearAllUsers();
+    await service.removeAll();
+    await usersService.removeAll();
   })
-
 
   it('should be defined', () => {
     expect(service).toBeDefined();
@@ -48,7 +47,8 @@ describe('TicketsService', () => {
     const { count, tickets } = await service.findAll(user.id)
     expect(count).toBe(1);
     expect(firstTicket.assignedToId).toBe(user.id);
-    console.log("firstticket", firstTicket);
+    verifyResolveTicket(firstTicket);
+    
   })
 
   it('should create another ticket and not assign', async () => {
@@ -60,41 +60,31 @@ describe('TicketsService', () => {
 
     secondTicket = await service.create(testTicket);
     expect(secondTicket).toBeDefined()
-    const { count } = await service.findAll(user.id)
+    let count  = await (await service.findAll(user.id)).count
     expect(count).toBe(2);
 
-    secondTicket = await service.findOne(secondTicket.id);
-    expect(secondTicket.assignedTo).toBe(null);
-    console.log("secondticket", secondTicket);
-  });
+     thirdTicket = await service.create(testTicket);
+    expect(thirdTicket).toBeDefined()
+    count  = await (await service.findAll(user.id)).count
+    expect(count).toBe(3);
 
-  it('should resolve the ticket', async () => {
-    verifyResolveTicket(firstTicket);
-  });
+    thirdTicket = await service.findOne(thirdTicket.id);
+    expect(thirdTicket.assignedTo).toBe(null);
 
-  // it('should assign and resolve the ticket', async () => {
-  //   await service.assignTicket(secondTicket.id, firstTicket.assignedToId);
-  //   secondTicket = await service.findOne(secondTicket.id);
-  //   console.log("assign secondticket", secondTicket);
-  //   expect(secondTicket.assignedTo.id).toBe(user.id)
-  //   verifyResolveTicket(secondTicket);
-  // });
+    
+    /* console.log("thirdTicket",thirdTicket.id,"userid", user.id)
+    await service.assignTicket(user.id,thirdTicket.id);
+    thirdTicket = await service.findOne(thirdTicket.id);
+
+    expect(thirdTicket.assignedTo.id).toBe(user.id)
+    verifyResolveTicket(thirdTicket); 
+ */
+  });
 
   const verifyResolveTicket = async (ticket: Ticket) => {
-
     await service.resolveTicket(ticket.id, ticket.assignedToId, "resolved");
     ticket = await service.findOne(ticket.id);
     expect(ticket.resolved).toBeTruthy()
     expect(ticket.resolution).toBe("resolved");
-    console.log("resolvedticket", ticket);
-  }
-
-  const clearAllTickets = async () => {
-    await service.removeAll();
-  }
-
-  const clearAllUsers = async () => {
-    const users = await usersService.findAll();
-    users.forEach(async (e) => await usersService.remove(e.id));
   }
 });
