@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AllTicketsResult, Constants, CreateTicket } from 'shared';
+import { AllTicketsResult, CreateTicket } from 'shared';
 import { User } from 'src/users/user.entity';
 import { Repository } from 'typeorm';
 import { Ticket } from './ticket.entity';
