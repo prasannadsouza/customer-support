@@ -52,12 +52,14 @@ jobs:
           credentials_json: '${{ secrets.GCP_JSON }}'
 
       - id: 'deploy-frontend'
+        name: 'Deploy Frontend'
         uses: 'google-github-actions/deploy-appengine@v1'
         with:
           project_id: ${{ secrets.PROJECT_ID }}
           deliverables: packages/frontend/client.yml
 
       - id: 'deploy-backend'
+        name: 'Deploy Backend'
         uses: 'google-github-actions/deploy-appengine@v1'
         with:
           project_id: ${{ secrets.PROJECT_ID }}
