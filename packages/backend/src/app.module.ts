@@ -14,7 +14,7 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'better-sqlite3',
-      database: "./local.db",
+      database: "/tmp/local.db",
       entities: [User, Ticket],
       synchronize: true,
       logging: true,
