@@ -27,7 +27,7 @@ The admin user is responsible for managing th list of users in the system
 
 
 ##  Technical Aspects
-There are two apps in the project.\ 
+There are two apps in the project.\
 The frontend app is built with ReactJs. The user interacts  through with the frontend application   through the browser.\
 The backend application is built with Nest.js. The backend app process requests from the browser via http api requests.  The backend app maintains users and tickets data in the SQL Lite database.
 
